@@ -1,0 +1,101 @@
+import random    #We later need random functions to decide enemy_number
+import sys        #We need a way to quit the program 
+round_counter = 0 
+rock_counter = 0
+paper_counter = 0
+scissors_counter = 0
+userinput = ' '            #all these will be called as global variables later, but first need to be assigned to 0 or empty strings
+enemy_choice = ' ' 
+previous_result = ' '
+previous_userinput = ' ' 
+total_win = 0
+total_loss = 0
+
+def start_game():
+    print 'Welcome to rock paper sciccors shoot.'
+    print 'You will play fifteen different rounds, and will be shown your score at the end.'
+    print 'Type "rock", "paper", or "scissors" as desired.'
+    round()
+    
+def counters():
+    global round_counter
+    round_counter+=1          #This adds one to round_counter at the beginning of each round
+    
+def round():
+    counters()                # ^
+    global round_counter    #I have to call all these global variables so that they are being used throughout the entire program
+    global userinput 
+    while userinput not in ['rock', 'paper', 'scissors', 'quit']:     #constantly be checking the userinput to see if it was not                                                                                                                                               
+        userinput = raw_input("Enter Answer: ")                         #in a list of certain strings, so that if the user accidently 
+        enemy_number = random.randint(0,2)                             #typed incorrectly, the program would continue to prompt them with their choice
+        global enemy_choice
+        global rock_counter
+        global paper_counter        #I had to call all these global variables so that they could be later passed between functions.
+        global scissors_counter
+        global previous_result
+        global previous_userinput
+        if round_counter == 1:          #I decided to make the computer chose rock everytime, since there is no data available to decide on
+            enemy_choice = 'rock'       #and people are mostly likely to through scissors first, in my experience.
+        elif previous_result == 'Win' and previous_userinput == 'rock' or previous_result == 'Loss' and previous_userinput == 'scissors':
+            enemy_choice = 'paper'
+        elif previous_result == 'Win' and previous_userinput == 'paper' or previous_result == 'Loss' and previous_userinput == 'rock' :
+            enemy_choice = 'scissors'
+        elif previous_result == 'Win' and previous_userinput == 'scissors' or previous_result == 'Loss' and previous_userinput == 'paper':
+            enemy_choice = 'rock'        #the lines above are the 'artificial intelligence' of the program, which assumes that people fall prey to 
+        elif previous_result == 'Tie':  #the common instinct to repeat their previous choice if they won and change if they lost. 
+            if enemy_number == 0 :       #if they previously tied, I then used RNG, since the date from the previous round is irrelevant
+                enemy_choice = 'rock'
+            elif enemy_number == 1 :  
+                enemy_choice = 'paper'
+            elif enemy_number == 2 :
+                enemy_choice = 'scissors'
+        previous_userinput = userinput    #This one line was the most difficult to realize the necessity of. It allows the function to change previous_userinput
+        print ('enemy choice is ' + str(enemy_choice))  #only after it was used to decide the computer's current decision. 
+        key() 
+        if round_counter >14:
+            print 'You won ' + str(total_win) + ' times and lost ' + str(total_loss) + ' times.'
+            sys.exit()  #A print statement displays their score, and ends the program afterwards. 
+        round()
+
+def key():
+    global previous_result   #global variables need to be called, since the required values are those that were manipulated within the round function
+    global total_win       
+    global total_loss
+    if userinput == 'rock' and enemy_choice == 'rock':  
+        print 'Tie!'
+        previous_result = 'Tie'
+    elif userinput == 'paper' and enemy_choice == 'paper': 
+         print 'Tie!'
+         previous_result = 'Tie'
+    elif userinput == 'scissors' and enemy_choice == 'scissors': #these if and elif statements just cover every possible combination, and their corresponding
+        print 'Tie!'                                              #results. There is also a counter to keep track of wins and losses. 
+        previous_result = 'Tie'
+    elif userinput == 'rock' and enemy_choice == 'paper':
+        print 'You lost!'
+        previous_result = 'Loss'
+        total_loss+=1
+    elif userinput == 'paper' and enemy_choice == 'scissors':
+        print 'You lost!'    
+        previous_result = 'Loss'
+        total_loss+=1
+    elif userinput == 'scissors' and enemy_choice == 'rock':
+        print 'You lost!'
+        previous_result = 'Loss'
+        total_loss+=1
+    elif userinput == 'rock' and enemy_choice == 'scissors':
+        print 'You won!'
+        previous_result = 'Win'
+        total_win+=1
+    elif userinput == 'paper' and enemy_choice == 'rock':
+        print 'You won!'
+        previous_result = 'Win'
+        total_win+=1
+    elif userinput == 'scissors' and enemy_choice == 'paper':
+        print 'You won!'
+        previous_result = 'Win'
+        total_win+=1
+    if userinput == 'quit':   #This option is not meant to be played while the program is played properly, but was
+        sys.exit()            #useful for allowing me to stop the program as I was testing it
+    global userinput         
+    userinput = ' '           #userinput has to be set to an empty string so that once round() is called again,
+                              #the while loop will prompt the user for an answer
